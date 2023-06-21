@@ -1,15 +1,15 @@
 let total = 0
 let opcion
 let productos = [
-    { id: 3, nombre: "Alimento de gato x 1kg", categoria: "alimento", precio: 1000 },
-    { id: 5, nombre: "Alimento de perro x 1kg", categoria: "alimento", precio: 1300 },
-    { id: 6, nombre: "Collar de gato", categoria: "accesorios", precio: 700 },
-    { id: 8, nombre: "Collar de perro", categoria: "accesorios", precio: 900 },
-    { id: 11, nombre: "Piedras sanitarias x 1kg", categoria: "higiene", precio: 400 },
-    { id: 13, nombre: "Ratón de plástico", categoria: "juguetes", precio: 700 },
-    { id: 15, nombre: "Pelota de tenis", categoria: "juguetes", precio: 600 },
-    { id: 17, nombre: "Hueso de cuero", categoria: "juguetes", precio: 500 },
-    { id: 13, nombre: "Rascador para gatos", categoria: "juguetes", precio: 800 },
+    { id: 3, nombre: "Alimento de gato x 1kg", categoria: "alimento", stock: 9, precio: 1000 },
+    { id: 5, nombre: "Alimento de perro x 1kg", categoria: "alimento", stock: 7, precio: 1300 },
+    { id: 6, nombre: "Collar de gato", categoria: "accesorios", stock: 2, precio: 700 },
+    { id: 8, nombre: "Collar de perro", categoria: "accesorios", stock: 1, precio: 900 },
+    { id: 11, nombre: "Piedras sanitarias x 1kg", categoria: "higiene", stock: 5,  precio: 400 },
+    { id: 13, nombre: "Ratón de plástico", categoria: "juguetes", stock: 4, precio: 700 },
+    { id: 15, nombre: "Pelota de tenis", categoria: "juguetes", stock: 6, precio: 600 },
+    { id: 17, nombre: "Hueso de cuero", categoria: "juguetes", stock: 5, precio: 500 },
+    { id: 19, nombre: "Rascador para gatos", categoria: "juguetes", stock: 2, precio: 800 },
 ]
 let carrito = []
 
@@ -34,7 +34,7 @@ do {
                     let ordenarMenorMayor = productos.sort((a, b) => a.precio - b.precio)
                     agregarProductosCarrito(ordenarMenorMayor)
                 } else if (ordPorPrecio === 2) {
-                    let ordenarMayorMenor = productos.sort((a, b) => a.precio + b.precio)
+                    let ordenarMayorMenor = productos.sort((a, b) => b.precio - a.precio)
                     agregarProductosCarrito(ordenarMayorMenor)
                 }
             } while (ordPorPrecio !== 1 && ordPorPrecio !== 2);
@@ -74,17 +74,7 @@ do {
             } else {
                 alert("Su pago de $" + total + " se realizó con éxito")
                 carrito = []
-                do {
-                    let refresh = Number(prompt("Inserte un número para elegir una opción\n1) Volver al menú\n2) Salir"))
-                    if (refresh === 1) {
-                        location.reload()
-                    } else if (refresh === 2) {
-                        alert("Gracias vuelva pronto")
-                    } else {
-                        alert("Ingrese un valor correcto")
-                    }
-                } while (refresh !== 2)
-
+                break
             }
         } else if (opcion === 6) {
             alert("Se vació el carrito")
@@ -94,7 +84,7 @@ do {
 
 } while (opcion !== 0)
 
-alert("Adiós gracias por visitar la tienda online")
+alert("Gracias! Vuelva pronto!")
 
 function mostrar(arrayMostrar) {
     let indice = "ID - Nombre\n"
@@ -119,22 +109,26 @@ function agregarProductosCarrito(productos) {
         alert("El producto seleccionado no está en la lista. Por favor, elija otro producto.")
     } else {
         let posProductoCarrito = carrito.findIndex(objeto => objeto.id === productoElegido.id)
-
-        if (posProductoCarrito === -1) {
-            carrito.push({
-                id: productoElegido.id,
-                nombre: productoElegido.nombre,
-                precioUnitario: productoElegido.precio,
-                unidades: 1,
-                subTotal: productoElegido.precio,
-            })
+        let stockProductos = productos.find(objeto => objeto.stock === productoElegido.id)
+        if (productoElegido.stock <= 0) {
+            alert("No hay stock de este producto, lo sentimos.")
         } else {
-            carrito[posProductoCarrito].unidades++
-            carrito[posProductoCarrito].subTotal = carrito[posProductoCarrito].precioUnitario * carrito[posProductoCarrito].unidades
+            if (posProductoCarrito === -1) {
+                carrito.push({
+                    id: productoElegido.id,
+                    nombre: productoElegido.nombre,
+                    precioUnitario: productoElegido.precio,
+                    unidades: 1,
+                    subTotal: productoElegido.precio,
+                })
+            } else {
+                carrito[posProductoCarrito].unidades++
+                carrito[posProductoCarrito].subTotal = carrito[posProductoCarrito].precioUnitario * carrito[posProductoCarrito].unidades
+            }
+            productoElegido.stock--
+            alert("Producto añadido al carrito")
+
+            total = carrito.reduce((acumulador, producto) => acumulador + producto.subTotal, 0)
         }
-
-        alert("Producto añadido al carrito")
-
-        total = carrito.reduce((acumulador, producto) => acumulador + producto.subTotal, 0)
     }
 }
